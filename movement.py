@@ -1,6 +1,11 @@
-import json, time, sys
+import json, time, sys, optparse
+parser = optparse.OptionParser()
+parser.add_option("-s","--speed", dest="speed", help="speed of the zoomba")
+(options,arguments) = parser.parse_args()
+if not options.speed:
+    parser.error("PLEASE SPECIFY A SPEED")
 viewingDistance = 200
-speed = 1
+speed = options.speed
 diameter = 20
 angularSpeed = speed*(diameter/2)
 cycleSpeed = 0.25
@@ -27,11 +32,3 @@ def turnLeft(deg):
 
 def findTurnTime(deg):
     return deg/(angularSpeed/2) # Original Equation Is change in theta = 0.5 * (wi + w) * t
-
-def cycle():
-    writeObstacles('test.json')
-    time.sleep(cycleSpeed)
-
-
-while True:
-    cycle()
