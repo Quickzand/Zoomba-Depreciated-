@@ -1,11 +1,21 @@
-import json, time, sys, optparse
-parser = optparse.OptionParser()
-parser.add_option("-s","--speed", dest="speed", help="speed of the zoomba")
-(options,arguments) = parser.parse_args()
-if not options.speed:
-    parser.error("PLEASE SPECIFY A SPEED")
+import json, time, sys, argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("-s","--statsPath", dest="statsPath", help="Path Of The Zoomba Stats")
+options = parser.parse_args()
+if not options.statsPath:
+    parser.error("PLEASE SPECIFY A STATS PATH")
+statsPath = options.statsPath
+
+def writeJson(fName,data):
+    with open(fName,'w') as outfile:
+        json.dump(data,outfile)
+
+def readJson(fname):
+    with open(fname) as f:
+        output = json.load(f)
+    return output
+
 viewingDistance = 200
-speed = options.speed
 diameter = 20
 angularSpeed = speed*(diameter/2)
 cycleSpeed = 0.25
@@ -19,14 +29,16 @@ obstacleData = {
 
 
 
-def writeObstacles(fName):
-    with open(fName,'w') as outfile:
-        json.dump(obstacleData,outfile)
 
 def turnRight(deg):
     time = findturnTime(deg)
 
 def turnLeft(deg):
+
+
+
+
+
     time = findturnTime(deg)
 
 
