@@ -22,7 +22,7 @@ def processSniffedPacket(packet):
         pass
 
 def reply(string, mac):
-    packet = scapy.Ether(dst=mac) / scapy.TCP() / string
+    packet = scapy.Ether(dst=mac) / scapy.ARP() / string
     print(packet.show())
     scapy.send(packet)
 

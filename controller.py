@@ -4,6 +4,7 @@ import scapy.all as scapy
 import argparse
 import subprocess
 import re
+from networkScanner import scan
 
 class roombaClass:
     pass
@@ -21,9 +22,8 @@ def getOptions():
     return options
 
 def findRoomba(interface):
-    #range = getIpRange(interface)
-    # packet1 = scapy.IP(ip["ip"])
-    packet = scapy.Ether() / scapy.TCP() / "roomba:'Are you roomba?'"
+    #range = scan("192.168.0.1/24")
+    packet = scapy.Ether("ff:ff:ff:ff:ff:ff") / scapy.ARP() / "roomba:'Are you roomba?'"
     print(packet.show())
     scapy.send(packet)
 
