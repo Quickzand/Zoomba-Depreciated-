@@ -27,7 +27,7 @@ def findRoomba(interface):
     print(packet.show())
     scapy.send(packet)
 
-    scapy.sniff(iface=interface, store=False, prn=listenForRoomba, timeout=1)
+    scapy.sniff(iface=interface, store=False, prn=listenForRoomba, timeout=5)
 
     if not roomba.isFound:
         print("[-] Roomba not found trying again")

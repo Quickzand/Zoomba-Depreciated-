@@ -8,7 +8,6 @@ def sniff(interface):
 
 def processSniffedPacket(packet):
     try:
-        packet.show()
         response = ""
         response += re.search(r"roomba:.*\"", str(scapy.raw(packet))).group(0)
         response = re.search(r"'.*'", response).group(0)
@@ -16,13 +15,13 @@ def processSniffedPacket(packet):
         print(command)
         if command != "":
             mac = packet.src
+            print(mac)
             runCommand(command, mac)
     except:
-        packet.show()
         pass
 
 def reply(string, mac):
-    packet = scapy.Ether(dst=mac) / scapy.ARP() / string
+    packet = scapy.Ether(dst="ff:ff:ff:ff:ff:ff") / scapy.ARP() / string
     print(packet.show())
     scapy.send(packet)
 
