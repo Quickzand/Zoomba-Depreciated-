@@ -22,21 +22,17 @@ def getOptions():
     return options
 
 def findRoomba(interface):
-    #range = scan("192.168.0.1/24")
-    packet = scapy.Ether("ff:ff:ff:ff:ff:ff") / scapy.ARP() / "roomba:'Are you roomba?'"
-    print(packet.show())
-    scapy.send(packet)
+    range = scan(getIpRange(interface))
+    for ip in range:
+        print(ip["ip"])
+        packet = scapy.IP(dst = ip["ip"]) / "roomba: 'Are you roomba?'"
+        print(packet.show())
+        scapy.send(packet)
 
-    scapy.sniff(iface=interface, store=False, prn=listenForRoomba, timeout=5)
-
+    scapy.sniff(iface=interface, store=False, prn=listenForRoomba, timeout=1)
     if not roomba.isFound:
         print("[-] Roomba not found trying again")
         findRoomba(interface)
-    #arp_request = scapy.ARP(pdst=ipRange)
-    # broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
-    # arp_request_broadcast = broadcast/"hi"
-    # arp_request_broadcast.show()
-    # (answered, unanswered) = scapy.srp(arp_request_broadcast, timeout=1)
 
 def listenForRoomba(packet):
     try:
@@ -52,6 +48,12 @@ def listenForRoomba(packet):
     except:
         packet.show()
         pass
+
+def getIpRange(interface):
+    output = subprocess.check_output(["ifconfig", interface])
+    gateway = re.search(r"\d*\.\d*\.\d*\.", str(output))
+    ipRange = gateway.group(0) + "1/24"
+    return ipRange
 
 if __name__ == "__main__":
     options = getOptions()

