@@ -50,6 +50,7 @@ def listenForRoomba(packet):
             roomba.mac = packet.src
             print("[+] Roomba found at " + roomba.mac)
     except:
+        packet.show()
         pass
 
 if __name__ == "__main__":
