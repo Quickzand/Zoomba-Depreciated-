@@ -3,6 +3,7 @@
 import scapy.all as scapy
 import re
 import subprocess
+import time
 
 class staticClass:
     pass
@@ -30,6 +31,7 @@ def reply(string, ip):
     for x in range(0, 10):
         print("[+] Replying '" + string + "' to " + ip)
         scapy.send(packet)
+        time.sleep(0.5)
 
 def runCommand(command, mac):
     if command == "Are you roomba?":
