@@ -1,7 +1,25 @@
 from matplotlib import pyplot as plt
-import random
+import random, argparse, json
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-w","--wallsPath", dest="wallsPath", help="Path Of The Walls JSON")
+options = parser.parse_args()
+if not options.wallsPath:
+    parser.error("PLEASE SPECIFY A ZOOMBA PATH")
+wallsPath = options.wallsPath
+def readJson(fname):
+    with open(fname) as f:
+        output = json.load(f)
+        return output
 
 
+def writeJson(fName,data):
+    with open(fName,'w') as outfile:
+        json.dump(data,outfile)
+
+
+wallsJson = readJson(wallsPath)
+walls = wallsJson["walls"]
 # Creating a class 'station' which would be like a node on the screen
 class Station:
     def __init__(self, i, j):
@@ -21,8 +39,14 @@ class Station:
         # list of neighbors of a station
         self.neighbors = []
         #THIS IS HOW WALLS ARE SET WE DID IT BOYS
-        if random.random() < 0.5:
+        if self.checkIfWall():
             self.wall = True
+    def checkIfWall(self):
+        posArray = [self.i,self.j]
+        if posArray in walls:
+            return True
+        else:
+            return False
 
     def add_neighbors(self, grid_passed):
         """Returns list of neighbor stations"""
@@ -159,7 +183,18 @@ for i in range(size):
         else:
             vis_grid[i][j] = grid[i][j].set
 
-plt.figure(figsize =(12, 12))
-plt.title('A* Algorithm - Shortest Path Finder\n')
-plt.imshow(vis_grid)
-plt.show()
+pathJSON = {"path":[]}
+for i in range(size):
+    for j in range(size):
+        if grid[i][j].set > 0:
+            pathJSON["path"].append([i,j])
+            print str(i) + "," + str(j)
+
+writeJson('path.json',pathJSON)
+
+
+
+#plt.figure(figsize =(12, 12))
+#plt.title('A* Algorithm - Shortest Path Finder\n')
+#plt.imshow(vis_grid)
+#plt.show()
