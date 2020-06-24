@@ -4,11 +4,13 @@ import scapy.all as scapy
 import argparse
 import subprocess
 import re
+from networkScanner import scan
+import sys
 
-class roombaClass:
+class zoombaClass:
     pass
-roomba = roombaClass()
-roomba.isFound = False
+zoomba = zoombaClass()
+zoomba.isFound = False
 
 def getOptions():
     parser = argparse.ArgumentParser()
@@ -20,38 +22,56 @@ def getOptions():
 
     return options
 
-def findRoomba(interface):
-    #range = getIpRange(interface)
-    # packet1 = scapy.IP(ip["ip"])
-    packet = scapy.Ether() / scapy.TCP() / "roomba:'Are you roomba?'"
-    print(packet.show())
-    scapy.send(packet)
+def findzoomba(interface):
+    range = scan(getIpRange(interface))                                         #Gets a range of ips, sends them all the packet are you zoomba, listens for a response
+    for ip in range:
+        packet = scapy.IP(dst = ip["ip"], src = getOwnIp(interface)) / "zoomba: 'Are you zoomba?'"
+        scapy.send(packet, verbose=False)
+    scapy.sniff(iface=interface, store=False, prn=listenForzoomba, timeout=3, filter="ip")
+    if not zoomba.isFound:
+        print("[-] zoomba not found trying again")
+        findzoomba(interface)
 
-    scapy.sniff(iface=interface, store=False, prn=listenForRoomba, timeout=1)
-
-    if not roomba.isFound:
-        print("[-] Roomba not found trying again")
-        findRoomba(interface)
-    #arp_request = scapy.ARP(pdst=ipRange)
-    # broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
-    # arp_request_broadcast = broadcast/"hi"
-    # arp_request_broadcast.show()
-    # (answered, unanswered) = scapy.srp(arp_request_broadcast, timeout=1)
-
-def listenForRoomba(packet):
+def listenForzoomba(packet):
     try:
         response = ""
-        response += re.search(r"roomba:.*\"", str(scapy.raw(packet))).group(0)
+        response += re.search(r"zoomba:.*\"", str(scapy.raw(packet))).group(0)
         response = re.search(r"'.*'", response).group(0)
         response = response[1:-1]
-        print(response)
-        if(response == "I am roomba"):
-            roomba.isFound = True
-            roomba.mac = packet.src
-            print("[+] Roomba found at " + roomba.mac)
+        if(response == "I am zoomba"):
+            zoomba.isFound = True
+            zoomba.ip = packet[scapy.IP].src
+            print("\r[+] zoomba found at " + zoomba.ip, end="")
     except:
         pass
 
+def getIpRange(interface):
+    output = subprocess.check_output(["ifconfig", interface])
+    gateway = re.search(r"\d*\.\d*\.\d*\.", str(output))
+    ipRange = gateway.group(0) + "1/24"
+    return ipRange
+
+def getOwnIp(interface):
+    output = subprocess.check_output(["ifconfig", interface])
+    ip = re.search(r"\d*\.\d*\.\d*\.\d*", str(output)).group(0)
+    return ip
+
+def runCommand(command, interface):
+    if command == "clear":
+        subprocess.run(["clear"])
+        print("Zoomba Controller Shell")
+    elif command == "exit":
+        sys.exit("exiting...")
+    else:
+        fullCommand = "zoomba: '"+command+"'"
+        packet = scapy.IP(dst = zoomba.ip, src = getOwnIp(interface)) / scapy.Raw(load=fullCommand)
+        scapy.send(packet, verbose=False)
+
 if __name__ == "__main__":
     options = getOptions()
-    findRoomba(options.interface)
+    print("[+] Locating zoomba")
+    findzoomba(options.interface)
+    print("\nZoomba Controller Shell")
+    while True:
+        command = input(" >> ")
+        runCommand(command, options.interface)
