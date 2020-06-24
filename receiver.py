@@ -15,7 +15,7 @@ def processSniffedPacket(packet):
     try:
         if(packet[scapy.IP].src != static.selfIP):
             response = ""
-            response += re.search(r"roomba:.*\"", str(scapy.raw(packet))).group(0)
+            response += re.search(r"zoomba:.*\"", str(scapy.raw(packet))).group(0)
             response = re.search(r"'.*'", response).group(0)
             command = response[1:-1]                                                #uhhhh you can figure it out
             if command != "":
@@ -32,8 +32,8 @@ def reply(string, ip):
         scapy.send(packet)
 
 def runCommand(command, mac):
-    if command == "Are you roomba?":
-        reply("roomba:'I am roomba'", mac)
+    if command == "Are you zoomba?":
+        reply("zoomba:'I am zoomba'", mac)
     elif command == "Python_Dictionaries":
         print("Python dictionaries are not objects. That's final.")
 
