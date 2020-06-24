@@ -22,13 +22,10 @@ def getOptions():
     return options
 
 def findRoomba(interface):
-    range = scan(getIpRange(interface))
+    range = scan(getIpRange(interface))                                         #Gets a range of ips, sends them all the packet are you roomba, listens for a response
     for ip in range:
-        print(ip["ip"])
         packet = scapy.IP(dst = ip["ip"]) / "roomba: 'Are you roomba?'"
-        print(packet.show())
         scapy.send(packet)
-
     scapy.sniff(iface=interface, store=False, prn=listenForRoomba, timeout=1)
     if not roomba.isFound:
         print("[-] Roomba not found trying again")
@@ -46,7 +43,6 @@ def listenForRoomba(packet):
             roomba.mac = packet.src
             print("[+] Roomba found at " + roomba.mac)
     except:
-        packet.show()
         pass
 
 def getIpRange(interface):
@@ -58,3 +54,4 @@ def getIpRange(interface):
 if __name__ == "__main__":
     options = getOptions()
     findRoomba(options.interface)
+    

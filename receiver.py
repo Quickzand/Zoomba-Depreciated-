@@ -2,32 +2,42 @@
 
 import scapy.all as scapy
 import re
+import subprocess
+
+class staticClass:
+    pass
+static = staticClass()
 
 def sniff(interface):
-    scapy.sniff(iface=interface, store=False, prn=processSniffedPacket)
+    scapy.sniff(iface=interface, store=False, prn=processSniffedPacket, filter="ip")
 
 def processSniffedPacket(packet):
     try:
-        response = ""
-        response += re.search(r"roomba:.*\"", str(scapy.raw(packet))).group(0)
-        response = re.search(r"'.*'", response).group(0)
-        command = response[1:-1]                                                #uhhhh you can figure it out
-        print(command)
-        if command != "":
-            ip = packet[IP].src
-            print(ip)
-            runCommand(command, ip)
+        if(packet[scapy.IP] != static.selfIP):
+            response = ""
+            response += re.search(r"roomba:.*\"", str(scapy.raw(packet))).group(0)
+            response = re.search(r"'.*'", response).group(0)
+            command = response[1:-1]                                                #uhhhh you can figure it out
+            if command != "":
+                ip = packet[scapy.IP].src
+                print("[+] Got a command '" + command + "' from " + ip)
+                runCommand(command, ip)
     except:
         pass
 
 def reply(string, ip):
     packet = scapy.IP(dst=ip) / scapy.Raw(load=string)
-    print(packet.show())
+    print("[+] Replying '" + string + "' to " + ip)
     scapy.send(packet)
 
 def runCommand(command, mac):
     if command == "Are you roomba?":
         reply("roomba:'I am roomba'", mac)
 
+def getOwnIp(interface):
+    output = subprocess.check_output(["ifconfig", interface])
+    ip = re.search(r"\d*\.\d*\.\d*\.\d*", str(output)).group(0)
+    return ip
 
+static.selfIP = getOwnIp("wlan0")
 sniff("wlan0")
