@@ -28,14 +28,16 @@ def processSniffedPacket(packet):
 
 def reply(string, ip):
     packet = scapy.IP(dst=ip) / scapy.Raw(load=string)
-    for x in range(0, 10):
+    for x in range(0, 25):
         print("[+] Replying '" + string + "' to " + ip)
         scapy.send(packet)
-        time.sleep(0.5)
+        time.sleep(0.1)
 
 def runCommand(command, mac):
     if command == "Are you roomba?":
         reply("roomba:'I am roomba'", mac)
+    elif command == "Python_Dictionaries":
+        print("Python dictionaries are not objects. That's final.")
 
 def getOwnIp(interface):
     output = subprocess.check_output(["ifconfig", interface])

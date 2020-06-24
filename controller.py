@@ -5,6 +5,7 @@ import argparse
 import subprocess
 import re
 from networkScanner import scan
+import sys
 
 class roombaClass:
     pass
@@ -24,9 +25,9 @@ def getOptions():
 def findRoomba(interface):
     range = scan(getIpRange(interface))                                         #Gets a range of ips, sends them all the packet are you roomba, listens for a response
     for ip in range:
-        packet = scapy.IP(dst = ip["ip"]) / "roomba: 'Are you roomba?'"
-        scapy.send(packet)
-    scapy.sniff(iface=interface, store=False, prn=listenForRoomba, timeout=1)
+        packet = scapy.IP(dst = ip["ip"], src = getOwnIp(interface)) / "roomba: 'Are you roomba?'"
+        scapy.send(packet, verbose=False)
+    scapy.sniff(iface=interface, store=False, prn=listenForRoomba, timeout=3)
     if not roomba.isFound:
         print("[-] Roomba not found trying again")
         findRoomba(interface)
@@ -51,6 +52,25 @@ def getIpRange(interface):
     ipRange = gateway.group(0) + "1/24"
     return ipRange
 
+def getOwnIp(interface):
+    output = subprocess.check_output(["ifconfig", interface])
+    ip = re.search(r"\d*\.\d*\.\d*\.\d*", str(output)).group(0)
+    return ip
+
+def runCommand(command, interface):
+    if command == "clear":
+        subprocess.run(["clear"])
+    elif command == "exit":
+        sys.exit("exiting...")
+    else:
+        fullCommand = "roomba: '"+command+"'"
+        packet = scapy.IP(dst = roomba.ip, src = getOwnIp(interface)) / scapy.Raw(load=fullCommand)
+        scapy.send(packet, verbose=False)
+
 if __name__ == "__main__":
     options = getOptions()
+    print("[+] Locating roomba")
     findRoomba(options.interface)
+    while True:
+        command = input(" >> ")
+        runCommand(command, options.interface)
