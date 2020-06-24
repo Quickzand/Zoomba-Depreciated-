@@ -38,11 +38,10 @@ def listenForRoomba(packet):
         response += re.search(r"roomba:.*\"", str(scapy.raw(packet))).group(0)
         response = re.search(r"'.*'", response).group(0)
         response = response[1:-1]
-        print(response)
         if(response == "I am roomba"):
             roomba.isFound = True
             roomba.ip = packet[scapy.IP].src
-            print("[+] Roomba found at " + roomba.ip)
+            print("\r[+] Roomba found at " + roomba.ip, end="")
     except:
         pass
 
@@ -71,6 +70,7 @@ if __name__ == "__main__":
     options = getOptions()
     print("[+] Locating roomba")
     findRoomba(options.interface)
+    print("\n")
     while True:
         command = input(" >> ")
         runCommand(command, options.interface)
