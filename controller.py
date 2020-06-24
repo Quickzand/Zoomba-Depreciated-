@@ -27,7 +27,7 @@ def findzoomba(interface):
     for ip in range:
         packet = scapy.IP(dst = ip["ip"], src = getOwnIp(interface)) / "zoomba: 'Are you zoomba?'"
         scapy.send(packet, verbose=False)
-    scapy.sniff(iface=interface, store=False, prn=listenForzoomba, timeout=3)
+    scapy.sniff(iface=interface, store=False, prn=listenForzoomba, timeout=3, filter="ip")
     if not zoomba.isFound:
         print("[-] zoomba not found trying again")
         findzoomba(interface)
