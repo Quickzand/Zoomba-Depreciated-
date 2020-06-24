@@ -40,8 +40,8 @@ def listenForRoomba(packet):
         print(response)
         if(response == "I am roomba"):
             roomba.isFound = True
-            roomba.mac = packet.src
-            print("[+] Roomba found at " + roomba.mac)
+            roomba.ip = packet[scapy.IP].src
+            print("[+] Roomba found at " + roomba.ip)
     except:
         pass
 
@@ -54,4 +54,3 @@ def getIpRange(interface):
 if __name__ == "__main__":
     options = getOptions()
     findRoomba(options.interface)
-    

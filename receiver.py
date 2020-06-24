@@ -13,7 +13,7 @@ def sniff(interface):
 
 def processSniffedPacket(packet):
     try:
-        if(packet[scapy.IP] != static.selfIP):
+        if(packet[scapy.IP].src != static.selfIP):
             response = ""
             response += re.search(r"roomba:.*\"", str(scapy.raw(packet))).group(0)
             response = re.search(r"'.*'", response).group(0)
@@ -26,10 +26,10 @@ def processSniffedPacket(packet):
         pass
 
 def reply(string, ip):
-    sleep(0.1)
     packet = scapy.IP(dst=ip) / scapy.Raw(load=string)
-    print("[+] Replying '" + string + "' to " + ip)
-    scapy.send(packet)
+    for x in range(0, 10):
+        print("[+] Replying '" + string + "' to " + ip)
+        scapy.send(packet)
 
 def runCommand(command, mac):
     if command == "Are you roomba?":
