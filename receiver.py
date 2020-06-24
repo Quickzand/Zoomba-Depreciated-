@@ -26,6 +26,7 @@ def processSniffedPacket(packet):
         pass
 
 def reply(string, ip):
+    sleep(0.1)
     packet = scapy.IP(dst=ip) / scapy.Raw(load=string)
     print("[+] Replying '" + string + "' to " + ip)
     scapy.send(packet)
@@ -37,6 +38,7 @@ def runCommand(command, mac):
 def getOwnIp(interface):
     output = subprocess.check_output(["ifconfig", interface])
     ip = re.search(r"\d*\.\d*\.\d*\.\d*", str(output)).group(0)
+    print(ip)
     return ip
 
 static.selfIP = getOwnIp("wlan0")
