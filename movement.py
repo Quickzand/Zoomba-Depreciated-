@@ -15,17 +15,6 @@ def readJson(fname):
         output = json.load(f)
     return output
 
-viewingDistance = 200
-diameter = 20
-angularSpeed = speed*(diameter/2)
-cycleSpeed = 0.25
-obstaclePosNumber = 1
-
-
-
-obstacleData = {
-"0":[0,0]
-}
 
 
 
@@ -34,11 +23,6 @@ def turnRight(deg):
     time = findturnTime(deg)
 
 def turnLeft(deg):
-
-
-
-
-
     time = findturnTime(deg)
 
 

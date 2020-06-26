@@ -1,16 +1,1 @@
-{
-  "":"The Name Of The Zoomba.. For Fun",
-  "Zoomba Name": "Frat Boy Zoomba",
-
-  "":"Acceleration Of The Zoomba in m/s^2",
-  "acceleration": 1,
-
-  "":"Speed of Zoomba - probably will be depreciated",
-  "speed": 0,
-
-  "":"Radius Of The Chassis Of The Zoomba",
-  "radius":50,
-
-  "":"The Max Distance That The Zoomba Can See",
-  "visualDistance":500
-}
+{"":"The Max Distance That The Zoomba Can See","Zoomba Name":"Frat Boy Zoomba","acceleration":1,"speed":0,"radius":50,"visualDistance":500}
