@@ -43,7 +43,7 @@ def runCommand(command, ip):
     elif command == "sendJson":
         reply("zoomba: 'test'", ip)
         json = movement.readJson("zoombaStats.json")
-        reply("zoomba:'JSON="+json.dumps(json)+"'", ip)
+        reply("zoomba:'JSON="+str(json)+"'", ip)
 
 def getOwnIp(interface):
     output = subprocess.check_output(["ifconfig", interface])
