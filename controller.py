@@ -7,11 +7,13 @@ import re
 from networkScanner import scan
 import sys
 from _thread import start_new_thread
+import movement
 
 class zoombaClass:
     pass
 zoomba = zoombaClass()
 zoomba.isFound = False
+zoomba.ip = ""
 
 def getOptions():
     parser = argparse.ArgumentParser()
