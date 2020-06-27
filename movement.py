@@ -1,4 +1,6 @@
 import json, time, sys, argparse
+
+
 def getArgs():
     parser = argparse.ArgumentParser()
     parser.add_argument("-s","--statsPath", dest="statsPath", help="Path Of The Zoomba Stats")
