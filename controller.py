@@ -39,16 +39,17 @@ def sniffForZoomba(interface):
 
 def listenForzoomba(packet):
     try:
-        response = ""
-        response += re.search(r"zoomba:.*\"", str(scapy.raw(packet))).group(0)
-        response = re.search(r"'.*'", response).group(0)
-        response = response[1:-1]
-        if(response == "I am zoomba"):
-            zoomba.isFound = True
-            zoomba.ip = packet[scapy.IP].src
-            print("\r[+] zoomba found at " + zoomba.ip, end="")
-        elif "JSON=" in response:
-            print(response)
+        if packet[scapy.IP].src != getOwnIp(options.interface): 
+            response = ""
+            response += re.search(r"zoomba:.*\"", str(scapy.raw(packet))).group(0)
+            response = re.search(r"'.*'", response).group(0)
+            response = response[1:-1]
+            if(response == "I am zoomba"):
+                zoomba.isFound = True
+                zoomba.ip = packet[scapy.IP].src
+                print("\r[+] zoomba found at " + zoomba.ip, end="")
+            elif "JSON=" in response:
+                print(response)
     except:
         pass
 
