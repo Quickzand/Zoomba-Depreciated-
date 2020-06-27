@@ -8,6 +8,8 @@ from networkScanner import scan
 import sys
 from _thread import start_new_thread
 import movement
+import json
+import ast
 
 class zoombaClass:
     pass
@@ -49,7 +51,8 @@ def listenForzoomba(packet):
                 zoomba.ip = packet[scapy.IP].src
                 print("\r[+] zoomba found at " + zoomba.ip, end="")
             elif "JSON=" in response:
-                print(response)
+                response = response[5:]
+                movement.writeJson("zoombaStats.json", ast.literal_eval(response))
     except:
         pass
 
@@ -64,6 +67,10 @@ def getOwnIp(interface):
     ip = re.search(r"\d*\.\d*\.\d*\.\d*", str(output)).group(0)
     return ip
 
+def updateJson(interface):
+    while True:
+        runCommand("sendJson", interface)
+        time.sleep(0.05)
 def runCommand(command, interface):
     if command == "clear":
         subprocess.run(["clear"])
@@ -80,6 +87,7 @@ if __name__ == "__main__":
     start_new_thread(sniffForZoomba, (options.interface,))
     print("[+] Locating zoomba")
     findzoomba(options.interface)
+    start_new_thread(updateJson, (options.interface, ))
     print("\nZoomba Controller Shell")
     while True:
         command = input(" >> ")

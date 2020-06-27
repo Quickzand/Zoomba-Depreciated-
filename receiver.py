@@ -41,7 +41,6 @@ def runCommand(command, ip):
     elif command == "pythonDictionaries":
         print("Python dictionaries are not objects. That's final.")
     elif command == "sendJson":
-        reply("zoomba: 'test'", ip)
         json = movement.readJson("zoombaStats.json")
         reply("zoomba:'JSON="+str(json)+"'", ip)
 
