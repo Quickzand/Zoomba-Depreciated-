@@ -46,7 +46,6 @@ def updateSpeedAndAcceleration():           #This should be run on a separate th
         json["speed"] = moving.speed
         writeJson("zoombaStats.json", json)
 
-        print(readJson("zoombaStats.json"))
         time.sleep(changeInTime)
 
 def getAcceleration():
