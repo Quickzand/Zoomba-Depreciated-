@@ -70,7 +70,7 @@ def getOwnIp(interface):
 def updateJson(interface):
     while True:
         runCommand("sendJson", interface)
-        time.sleep(0.05)
+        time.sleep(0.1)
 def runCommand(command, interface):
     if command == "clear":
         subprocess.run(["clear"])
