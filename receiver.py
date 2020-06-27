@@ -40,7 +40,9 @@ def runCommand(command, ip):
     elif command == "pythonDictionaries":
         print("Python dictionaries are not objects. That's final.")
     elif command == "sendJson":
+        reply("zoomba: 'test'", ip)
         reply("zoomba:'JSON="+movement.readJson("zoombaStats.json")+"'", ip)
+        print(movement.readJson("zoombaStats.json"))
 
 def getOwnIp(interface):
     output = subprocess.check_output(["ifconfig", interface])
