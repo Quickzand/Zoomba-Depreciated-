@@ -3,6 +3,7 @@
 import scapy.all as scapy
 import re
 import subprocess
+from _thread import start_new_thread
 
 class staticClass:
     pass
@@ -26,10 +27,11 @@ def processSniffedPacket(packet):
         pass
 
 def reply(string, ip):
+    start_new_thread(replyThread, (string, ip,))
+def replyThread(string, ip):
     packet = scapy.IP(dst=ip) / scapy.Raw(load=string)
-    for x in range(0, 25):
-        print("[+] Replying '" + string + "' to " + ip)
-        scapy.send(packet)
+    print("[+] Replying '" + string + "' to " + ip)
+    scapy.send(packet)
 
 def runCommand(command, mac):
     if command == "Are you zoomba?":
@@ -43,5 +45,6 @@ def getOwnIp(interface):
     print(ip)
     return ip
 
-static.selfIP = getOwnIp("wlan0")
-sniff("wlan0")
+if __name__ == "__main__":
+    static.selfIP = getOwnIp("wlan0")
+    sniff("wlan0")

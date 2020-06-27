@@ -6,6 +6,7 @@ import subprocess
 import re
 from networkScanner import scan
 import sys
+from _thread import start_new_thread
 
 class zoombaClass:
     pass
@@ -27,10 +28,12 @@ def findzoomba(interface):
     for ip in range:
         packet = scapy.IP(dst = ip["ip"], src = getOwnIp(interface)) / "zoomba: 'Are you zoomba?'"
         scapy.send(packet, verbose=False)
-    scapy.sniff(iface=interface, store=False, prn=listenForzoomba, timeout=3, filter="ip")
     if not zoomba.isFound:
         print("[-] zoomba not found trying again")
         findzoomba(interface)
+
+def sniffForZoomba(interface):
+    scapy.sniff(iface=interface, store=False, prn=listenForzoomba, filter="ip")
 
 def listenForzoomba(packet):
     try:
@@ -69,6 +72,7 @@ def runCommand(command, interface):
 
 if __name__ == "__main__":
     options = getOptions()
+    start_new_thread(sniffForZoomba, (options.interface,))
     print("[+] Locating zoomba")
     findzoomba(options.interface)
     print("\nZoomba Controller Shell")
