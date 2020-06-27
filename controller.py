@@ -39,7 +39,7 @@ def sniffForZoomba(interface):
 
 def listenForzoomba(packet):
     try:
-        if packet[scapy.IP].src != getOwnIp(options.interface): 
+        if packet[scapy.IP].src != getOwnIp(options.interface):
             response = ""
             response += re.search(r"zoomba:.*\"", str(scapy.raw(packet))).group(0)
             response = re.search(r"'.*'", response).group(0)
