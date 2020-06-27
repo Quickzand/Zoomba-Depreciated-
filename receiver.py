@@ -28,9 +28,9 @@ def processSniffedPacket(packet):
     except:
         pass
 
-#def reply(string, ip):
-#    start_new_thread(replyThread, (string, ip,))
 def reply(string, ip):
+    start_new_thread(replyThread, (string, ip,))
+def replyThread(string, ip):
     packet = scapy.IP(dst=ip) / scapy.Raw(load=string)
     print("[+] Replying '" + string + "' to " + ip)
     scapy.send(packet)
