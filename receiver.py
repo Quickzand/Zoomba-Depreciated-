@@ -5,6 +5,7 @@ import re
 import subprocess
 from _thread import start_new_thread
 import movement
+import json
 
 class staticClass:
     pass
@@ -42,7 +43,7 @@ def runCommand(command, ip):
     elif command == "sendJson":
         reply("zoomba: 'test'", ip)
         json = movement.readJson("zoombaStats.json")
-        reply("zoomba:'JSON="+json+"'", ip)
+        reply("zoomba:'JSON="+json.dumps(json)+"'", ip)
 
 def getOwnIp(interface):
     output = subprocess.check_output(["ifconfig", interface])
