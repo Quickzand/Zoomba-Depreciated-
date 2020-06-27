@@ -47,6 +47,8 @@ def listenForzoomba(packet):
             zoomba.isFound = True
             zoomba.ip = packet[scapy.IP].src
             print("\r[+] zoomba found at " + zoomba.ip, end="")
+        elif "JSON=" in response:
+            print(response)
     except:
         pass
 

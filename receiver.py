@@ -34,11 +34,13 @@ def replyThread(string, ip):
     print("[+] Replying '" + string + "' to " + ip)
     scapy.send(packet)
 
-def runCommand(command, mac):
+def runCommand(command, ip):
     if command == "Are you zoomba?":
-        reply("zoomba:'I am zoomba'", mac)
-    elif command == "Python_Dictionaries":
+        reply("zoomba:'I am zoomba'", ip)
+    elif command == "pythonDictionaries":
         print("Python dictionaries are not objects. That's final.")
+    elif command == "sendJson":
+        reply("zoomba:'JSON="+movement.readJson("zoombaStats.json")+"'")
 
 def getOwnIp(interface):
     output = subprocess.check_output(["ifconfig", interface])
@@ -47,5 +49,13 @@ def getOwnIp(interface):
     return ip
 
 if __name__ == "__main__":
+    start_new_thread(movement.updateSpeedAndAcceleration, ())
+    # while True:
+    #     try:
+    #         print(movement.readJson("zoombaStats.json"))
+    #         time.sleep(0.01)
+    #     except:
+    #         pass
+
     static.selfIP = getOwnIp("wlan0")
     sniff("wlan0")
