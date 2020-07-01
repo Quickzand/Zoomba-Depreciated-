@@ -51,6 +51,10 @@ def updateSpeedAndAcceleration():           #This should be run on a separate th
 def getAcceleration():
     moving.acceleration = readJson("zoombaStats.json")["acceleration"]
 
+
+def deccelerate():
+    # Normally Code to Make the Zoomba Decelerate Would go here, but this is temp Code
+
 if __name__ == "__main__":
     #options = getArgs()
     #statsPath = options.statsPath

@@ -5,7 +5,7 @@ import movement
 class staticClass:
     pass
 static = staticClass()
-static.acceleration = 1
+static.acceleration = [1,1]
 
 def getAcceleration():  #This will get acceleration from the thing but for now its just one
     return static.acceleration
