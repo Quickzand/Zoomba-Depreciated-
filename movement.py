@@ -1,4 +1,7 @@
-import json, time, sys, argparse
+import json, time, sys, argparse, threading
+from threading import Event, Thread
+global turnCount
+turnCount = 0
 
 
 class movingClass:          #basically just want organized static variables
@@ -27,18 +30,35 @@ def readJson(fname):
         output = json.load(f)
     return output
 
+def call_repeatedly(interval, func, changeInDegrees):
+    stopped = Event()
+    def loop():
+        while not stopped.wait(interval): # the first call is in `interval` secs
+            func(changeInDegrees)
+    Thread(target=loop).start()
+    return stopped.set
+
 def turnRight(deg):
     turnTime = findTurnTime(deg)
-    t_end = time.time() + turnTime
-    changeInDegrees = deg/turnTime
+    print(turnTime)
+    changeInDegreesInput = deg/turnTime
+    endMe = call_repeatedly(0.1,turnRightTimeUpdate,changeInDegrees=changeInDegreesInput*0.1)
     starttime = time.time()
-    while time.time() < t_end:
-        turnOnLeftWheels("forward")
-        turnOnRightWheels("backwards")
-        positionData["rotation"] = positionData["rotation"] + changeInDegrees
-        writeJson("positionData.json",positionData)
-        if positionData["rotation"] > 360:
-            positionData["rotation"] = positionData["rotation"] - 360
+    t_end = time.time() + turnTime
+    while turnCount < (turnTime/0.1):
+        RandomActionGoesHere = True #Didnt know how else to wait for the condition to be false
+    endMe()
+    sys.exit()
+
+def turnRightTimeUpdate(changeInDegrees):
+    turnOnLeftWheels("forward")
+    turnOnRightWheels("backwards")
+    positionData["rotation"] = positionData["rotation"] + changeInDegrees
+    writeJson("positionData.json",positionData)
+    if positionData["rotation"] > 360:
+        positionData["rotation"] = positionData["rotation"] - 360
+    global turnCount
+    turnCount = turnCount + 1
 
 
 def turnLeft(deg):
@@ -108,7 +128,7 @@ def cycle():
 
 
         if wow:
-            turnRight(100)
+            turnRight(360)
             wow = False
         writeJson("positionData.json",positionData)
 
