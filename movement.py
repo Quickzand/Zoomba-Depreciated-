@@ -39,20 +39,21 @@ def call_repeatedly(interval, func, changeInDegrees):
     return stopped.set
 
 def turnRight(deg):
+    global turnCount
     turnTime = findTurnTime(deg)
-    print(turnTime)
     changeInDegreesInput = deg/turnTime
     endMe = call_repeatedly(0.1,turnRightTimeUpdate,changeInDegrees=changeInDegreesInput*0.1)
     starttime = time.time()
     t_end = time.time() + turnTime
     while turnCount < (turnTime/0.1):
         RandomActionGoesHere = True #Didnt know how else to wait for the condition to be false
+    turnCount = 0
     endMe()
-    sys.exit()
+
 
 def turnRightTimeUpdate(changeInDegrees):
     turnOnLeftWheels("forward")
-    turnOnRightWheels("backwards")
+    turnOnRightWheels("backward")
     positionData["rotation"] = positionData["rotation"] + changeInDegrees
     writeJson("positionData.json",positionData)
     if positionData["rotation"] > 360:
@@ -62,17 +63,26 @@ def turnRightTimeUpdate(changeInDegrees):
 
 
 def turnLeft(deg):
+    global turnCount
     turnTime = findTurnTime(deg)
+    changeInDegreesInput = deg/turnTime
+    endMe = call_repeatedly(0.1,turnLeftTimeUpdate,changeInDegrees=changeInDegreesInput*0.1)
+    starttime = time.time()
     t_end = time.time() + turnTime
-    changeInDegrees = deg/turnTime
-    while time.time() < t_end:
-        turnOnLeftWheels("forward")
-        turnOnRightWheels("backwards")
-        positionData["rotation"] = positionData["rotation"] - changeInDegrees
-        writeJson("positionData.json",positionData)
-        if positionData["rotation"] > 360:
-            positionData["rotation"] = positionData["rotation"] - 360
+    while turnCount < (turnTime/0.1):
+        RandomActionGoesHere = True #Didnt know how else to wait for the condition to be false
+    turnCount = 0
+    endMe()
 
+def turnLeftTimeUpdate(changeInDegrees):
+    turnOnLeftWheels("backward")
+    turnOnRightWheels("forward")
+    positionData["rotation"] = positionData["rotation"] - changeInDegrees
+    writeJson("positionData.json",positionData)
+    if positionData["rotation"] < 0:
+        positionData["rotation"] = positionData["rotation"] + 360
+    global turnCount
+    turnCount = turnCount + 1
 
 
 def findTurnTime(deg):
@@ -115,27 +125,29 @@ def turnOnRightWheels(direction): #Code To Turn On Right Wheels Would Go Here - 
         testWow = 1
 
 
+def turn(deg): #ammount to turn
+    if deg < 0:
+        turnLeft(deg * -1)
+    else:
+        turnRight(deg)
 
 
-def cycle():
+
+def cycle(hmmm):
     global zoombaStats
     global positionData
-    wow = True
-    while True:
-        zoombaStats = readJson("zoombaStats.json")
-        positionData = readJson("positionData.json")
-
-
-
-        if wow:
-            turnRight(360)
-            wow = False
-        writeJson("positionData.json",positionData)
+    zoombaStats = readJson("zoombaStats.json")
+    positionData = readJson("positionData.json")
+    actionSet = zoombaStats["actions"]
+    if len(actionSet) > 0:
+        exec(actionSet.pop(0))
+    zoombaStats["actions"] = actionSet
+    writeJson("positionData.json",positionData)
+    writeJson("zoombaStats.json",zoombaStats)
 
 
 if __name__ == "__main__":
     #options = getArgs()
     #statsPath = options.statsPath
     pass
-
-cycle()
+call_repeatedly(0.1,cycle,5)
