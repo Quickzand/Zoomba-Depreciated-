@@ -1,12 +1,14 @@
 from matplotlib import pyplot as plt
-import random, argparse, json
+import random, argparse, json, math
+#
+#parser = argparse.ArgumentParser()
+#parser.add_argument("-w","--wallsPath", dest="wallsPath", help="Path Of The Walls JSON")
+#options = parser.parse_args()
+#if not options.wallsPath:
+#    parser.error("PLEASE SPECIFY A WALLS PATH")
+#wallsPath = options.wallsPath
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-w","--wallsPath", dest="wallsPath", help="Path Of The Walls JSON")
-options = parser.parse_args()
-if not options.wallsPath:
-    parser.error("PLEASE SPECIFY A ZOOMBA PATH")
-wallsPath = options.wallsPath
+wallsPath = "walls.json"
 def readJson(fname):
     with open(fname) as f:
         output = json.load(f)
@@ -20,6 +22,9 @@ def writeJson(fName,data):
 
 wallsJson = readJson(wallsPath)
 walls = wallsJson["walls"]
+
+zoombaStats = readJson("zoombaStats.json")
+positionData = readJson("positionData.json")
 # Creating a class 'station' which would be like a node on the screen
 class Station:
     def __init__(self, i, j):
@@ -91,7 +96,7 @@ open_set = []
 open_set = Set(open_set)
 closed_set = []
 closed_set = Set(closed_set)
-size = 50
+size = 1000
 grid = []
 
 # Making a grid
@@ -109,8 +114,8 @@ for i in range(size):
     for j in range(size):
         grid[i][j].add_neighbors(grid)
 
-start = grid[00][0]
-end = grid[size - 1][size - 1]
+start = grid[int(round(positionData["x"]))][int(round(positionData["y"]))]
+end = grid[zoombaStats["destination"]["x"]][zoombaStats["destination"]["y"]]
 grid[0][0].wall = False
 grid[size - 1][size - 1].wall = False
 
@@ -184,17 +189,46 @@ for i in range(size):
             vis_grid[i][j] = grid[i][j].set
 
 pathJSON = {"path":[]}
+basePath = []
 for i in range(size):
     for j in range(size):
         if grid[i][j].set > 0:
-            pathJSON["path"].append([i,j])
-            print str(i) + "," + str(j)
-
-writeJson('path.json',pathJSON)
+            basePath.append([i,j])
+            #print str(i) + "," + str(j)
 
 
+linePath = {
+    "path": [
+        {"start":[basePath[0][0],basePath[0][1]],"end":[basePath[0][0],basePath[0][1]]}
+    ]
+}
 
-#plt.figure(figsize =(12, 12))
-#plt.title('A* Algorithm - Shortest Path Finder\n')
-#plt.imshow(vis_grid)
-#plt.show()
+for point in basePath:
+    currentLine = linePath["path"][-1]
+    if currentLine["end"][0] == 0:
+        lastAngle = 0
+    else:
+        lastAngle = math.atan(currentLine["end"][1]/(currentLine["end"][0]+0.0))
+    print round(lastAngle,1)
+    if point[0] == 0:
+        currentAngle = 0
+    else:
+        currentAngle = math.atan(point[1]/(point[0]+0.0))
+    print round(currentAngle,1)
+    if round(currentAngle,1) == round(lastAngle,1):
+        linePath["path"][-1]["end"] = point
+    else:
+        linePath["path"].append({"start":point,"end":point})
+
+
+
+
+
+writeJson('path.json',linePath)
+
+
+
+plt.figure(figsize =(12, 12))
+plt.title('A* Algorithm - Shortest Path Finder\n')
+plt.imshow(vis_grid)
+plt.show()

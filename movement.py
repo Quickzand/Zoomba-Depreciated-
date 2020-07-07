@@ -1,7 +1,9 @@
-import json, time, sys, argparse, threading
+import json, time, sys, argparse, threading, math
 from threading import Event, Thread
 global turnCount
 turnCount = 0
+global moveCount
+moveCount = 0
 
 
 class movingClass:          #basically just want organized static variables
@@ -124,6 +126,8 @@ def turnOnRightWheels(direction): #Code To Turn On Right Wheels Would Go Here - 
         #Code To Go Backwards Goes here
         testWow = 1
 
+def rotate(deg):
+    turn(deg)
 
 def turn(deg): #ammount to turn
     if deg < 0:
@@ -131,16 +135,64 @@ def turn(deg): #ammount to turn
     else:
         turnRight(deg)
 
+def forward(dist):
+    #The Code To Move foward
+    moveTime = dist/zoombaStats["speed"]
+    global moveCount
+    if moveTime == 0:
+        changeInPos = dist
+    else:
+        changeInPos = dist/moveTime
+    endMe = call_repeatedly(0.1,forwardTimeUpdate,changeInPos*0.1)
+    starttime = time.time()
+    t_end = time.time() + moveTime
+    while moveCount < (moveTime/0.1):
+        RandomActionGoesHere = True #Didnt know how else to wait for the condition to be false
+    moveCount = 0
+    endMe()
+
+def forwardTimeUpdate(changeInPos):
+    turnOnLeftWheels("forward")
+    turnOnRightWheels("forward")
+    positionData["x"] = positionData["x"] + (math.cos((math.pi/180) * positionData["rotation"]) * changeInPos)
+    positionData["y"] = positionData["y"] + (math.sin((math.pi/180) * positionData["rotation"]) * changeInPos)
+    writeJson("positionData.json",positionData)
+    if positionData["rotation"] < 0:
+        positionData["rotation"] = positionData["rotation"] + 360
+    global moveCount
+    moveCount = moveCount + 1
+
+pathData = readJson("path.json")
+
+def followPath():
+    global pathData
+    if len(pathData["path"]) > 0:
+        line = pathData["path"].pop(0)
+        if line["start"][0] == 0:
+            angle = 0
+        else:
+            angle = math.atan(line["start"][1]/(line["start"][0]+0.0))
+        zoombaStats["actions"].append("rotate("+str(positionData["rotation"]-angle)+")")
+        xDist = line["start"][0] - line["end"][0]
+        yDist = line["start"][1] - line["end"][1]
+        dist = math.sqrt((xDist*xDist) + (yDist * yDist))
+        zoombaStats["actions"].append("forward("+str(dist)+")")
+
+
+
 
 
 def cycle(hmmm):
     global zoombaStats
     global positionData
+    global pathData
     zoombaStats = readJson("zoombaStats.json")
     positionData = readJson("positionData.json")
     actionSet = zoombaStats["actions"]
     if len(actionSet) > 0:
         exec(actionSet.pop(0))
+    else:
+        followPath()
     zoombaStats["actions"] = actionSet
     writeJson("positionData.json",positionData)
     writeJson("zoombaStats.json",zoombaStats)
