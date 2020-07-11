@@ -1,4 +1,4 @@
-import json, time, sys, argparse, threading, math
+import json, time, sys, argparse, threading, math, os
 from threading import Event, Thread
 global turnCount
 turnCount = 0
@@ -164,6 +164,32 @@ def forwardTimeUpdate(changeInPos):
 
 pathData = readJson("path.json")
 
+def lookAt(x,y):
+    changeInX = x - positionData["x"]
+    changeInY = y - positionData["y"]
+    angleOfLine = math.atan2(changeInY,changeInX)
+    print angleOfLine
+
+    if changeInY == 0:
+        if changeInX < 0:
+            deg = 180
+        else:
+            deg = 0
+    else:
+        if changeInY < 0:
+            deg = 180 + math.atan2(changeInY,changeInX)
+        else:
+            if changeInX < 0:
+                deg = 180 - math.atan2(changeInY,changeInX)
+            else:
+                deg = math.atan2(changeInY,changeInX)
+
+    #changeInDegrees = -math.atan2(changeInY,changeInX) - (math.pi/2)
+    return "rotate("+str(deg - positionData["rotation"])+")"
+
+def pointInDirection(deg):
+    return deg - positionData["rotation"]
+
 def followPath():
     global pathData
     if len(pathData["path"]) > 0:
@@ -171,16 +197,21 @@ def followPath():
         if line["start"][0] == 0:
             angle = 0
         else:
-            angle = math.atan(line["start"][1]/(line["start"][0]+0.0))
-        zoombaStats["actions"].append("rotate("+str(positionData["rotation"]-angle)+")")
+            angle = math.atan2(line["start"][1]-positionData["y"],line["start"][0] - positionData["x"])
+        #print angle
+        #print positionData["rotation"]
+        zoombaStats["actions"].append(lookAt(line["end"][0],line["end"][1]))
         xDist = line["start"][0] - line["end"][0]
         yDist = line["start"][1] - line["end"][1]
         dist = math.sqrt((xDist*xDist) + (yDist * yDist))
-        zoombaStats["actions"].append("forward("+str(dist)+")")
+        #zoombaStats["actions"].append("forward("+str(dist)+")")
 
 
 
-
+def pathfind():
+    os.system('python pathfinder.py')
+    #exec(open('pathfinder.py').read())
+    #execfile("pathfinder.py")
 
 def cycle(hmmm):
     global zoombaStats
@@ -190,12 +221,14 @@ def cycle(hmmm):
     positionData = readJson("positionData.json")
     actionSet = zoombaStats["actions"]
     if len(actionSet) > 0:
+        print("Executing... " + actionSet[0])
         exec(actionSet.pop(0))
     else:
         followPath()
     zoombaStats["actions"] = actionSet
     writeJson("positionData.json",positionData)
     writeJson("zoombaStats.json",zoombaStats)
+    writeJson("path.json",pathData)
 
 
 if __name__ == "__main__":

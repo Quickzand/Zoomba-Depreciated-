@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-import random, argparse, json, math
+import random, argparse, json, math, sys
 #
 #parser = argparse.ArgumentParser()
 #parser.add_argument("-w","--wallsPath", dest="wallsPath", help="Path Of The Walls JSON")
@@ -21,6 +21,7 @@ def writeJson(fName,data):
 
 
 wallsJson = readJson(wallsPath)
+global walls
 walls = wallsJson["walls"]
 
 zoombaStats = readJson("zoombaStats.json")
@@ -96,6 +97,7 @@ open_set = []
 open_set = Set(open_set)
 closed_set = []
 closed_set = Set(closed_set)
+global size
 size = 1000
 grid = []
 
@@ -199,36 +201,43 @@ for i in range(size):
 
 linePath = {
     "path": [
-        {"start":[basePath[0][0],basePath[0][1]],"end":[basePath[0][0],basePath[0][1]]}
+        {"start":[positionData["x"],positionData["y"]],"end":[basePath[1][0],basePath[1][1]]}
     ]
 }
 
+def pointIsOnLine(m, c, x, y):
+
+    # If (x, y) satisfies the
+    # equation of the line
+    if (y == ((m * x) + c)):
+        return True;
+
+    return False;
+
 for point in basePath:
     currentLine = linePath["path"][-1]
-    if currentLine["end"][0] == 0:
-        lastAngle = 0
+    if (currentLine["end"][0] - currentLine["start"][0]) == 0 or currentLine["end"] == point:
+        currentLine["end"] = point
+        continue
     else:
-        lastAngle = math.atan(currentLine["end"][1]/(currentLine["end"][0]+0.0))
-    print round(lastAngle,1)
-    if point[0] == 0:
-        currentAngle = 0
+        currentSlope = (currentLine["end"][1] - currentLine["start"][1])/(currentLine["end"][0] - currentLine["start"][0])
+    yInt = currentLine["end"][1]-(currentLine["end"][0]*currentSlope)
+    if pointIsOnLine(currentSlope,yInt,point[0],point[1]):
+        currentLine["end"] = point
     else:
-        currentAngle = math.atan(point[1]/(point[0]+0.0))
-    print round(currentAngle,1)
-    if round(currentAngle,1) == round(lastAngle,1):
-        linePath["path"][-1]["end"] = point
-    else:
-        linePath["path"].append({"start":point,"end":point})
+        linePath["path"].append({"start":currentLine["end"],"end":point})
+    #print currentSlope
 
-
-
-
-
+res = []
+for i in linePath["path"]:
+    if i not in res and not i["start"] == i["end"]:
+        res.append(i)
+linePath["path"] = res
 writeJson('path.json',linePath)
 
 
 
-plt.figure(figsize =(12, 12))
-plt.title('A* Algorithm - Shortest Path Finder\n')
-plt.imshow(vis_grid)
-plt.show()
+#plt.figure(figsize =(12, 12))
+#plt.title('A* Algorithm - Shortest Path Finder\n')
+#plt.imshow(vis_grid)
+#plt.show()
