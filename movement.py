@@ -88,7 +88,9 @@ def turnLeftTimeUpdate(changeInDegrees):
 
 
 def findTurnTime(deg):
-    return deg/((zoombaStats["speed"]*zoombaStats["radius"])/2.0) # Original Equation Is change in theta = 0.5 * (wi + w) * t
+    return deg/((zoombaStats["speed"]+zoombaStats["radius"])/2.0) # Original Equation Is change in theta = 0.5 * (wi + w) * t
+    # t = theta / (0.5 * (wi + w))
+    #THIS WAS WRONG MATTHEW YOU DID * INSTEAD OF +
 
 
 
@@ -165,27 +167,54 @@ def forwardTimeUpdate(changeInPos):
 pathData = readJson("path.json")
 
 def lookAt(x,y):
+    x = zoombaStats["destination"]["x"]                                         #This is just temp so i can use it on random points without finding the function that calls this
+    y = zoombaStats["destination"]["y"]
+
     changeInX = x - positionData["x"]
     changeInY = y - positionData["y"]
+
+    print(changeInX)
+    print(changeInY)
+
     angleOfLine = math.atan2(changeInY,changeInX)
-    print angleOfLine
+    angleOfLineDeg = angleOfLine * 180 / math.pi
+    print (angleOfLine)
+    print (angleOfLineDeg)
 
-    if changeInY == 0:
-        if changeInX < 0:
-            deg = 180
+    if positionData["rotation"] % 360 > angleOfLineDeg:                         #This is to get the most efficient direction without fucking with negatives
+        amountToTurn = positionData["rotation"] % 360 - angleOfLineDeg
+        if amountToTurn > 180:
+            amountToTurn = amountToTurn - 180
+            print("Right: " + amountToTurn)
+            turnRight(amountToTurn)
         else:
-            deg = 0
-    else:
-        if changeInY < 0:
-            deg = 180 + math.atan2(changeInY,changeInX)
-        else:
-            if changeInX < 0:
-                deg = 180 - math.atan2(changeInY,changeInX)
-            else:
-                deg = math.atan2(changeInY,changeInX)
+            if amountToTurn > 180:
+                amountToTurn = amountToTurn - 180
+                print("Left: " + amountToTurn)
+                turnLeft(amountToTurn)
+            print("Left: " + str(amountToTurn))
+            turnLeft(amountToTurn)
+    elif positionData["rotation"] % 360 < angleOfLineDeg:
+        amountToTurn = angleOfLineDeg - positionData["rotation"] % 360
+        print("Right: " + str(amountToTurn))
+        turnRight(amountToTurn)
 
-    #changeInDegrees = -math.atan2(changeInY,changeInX) - (math.pi/2)
-    return "rotate("+str(deg - positionData["rotation"])+")"
+    #if changeInY == 0:
+    #     if changeInX < 0:
+    #         deg = 180
+    #     else:
+    #         deg = 0
+    # else:
+    #     if changeInY < 0:
+    #         deg = 180 + math.atan2(changeInY,changeInX)
+    #     else:
+    #         if changeInX < 0:
+    #             deg = 180 - math.atan2(changeInY,changeInX)
+    #         else:
+    #             deg = math.atan2(changeInY,changeInX)
+    #
+    # #changeInDegrees = -math.atan2(changeInY,changeInX) - (math.pi/2)
+    # return "rotate("+str(deg - positionData["rotation"])+")"
 
 def pointInDirection(deg):
     return deg - positionData["rotation"]
@@ -234,5 +263,4 @@ def cycle(hmmm):
 if __name__ == "__main__":
     #options = getArgs()
     #statsPath = options.statsPath
-    pass
-call_repeatedly(0.1,cycle,5)
+    call_repeatedly(0.1,cycle,5)
