@@ -1,4 +1,3 @@
-from matplotlib import pyplot as plt
 import random, argparse, json, math, sys
 #
 #parser = argparse.ArgumentParser()

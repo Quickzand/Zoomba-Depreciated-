@@ -58,8 +58,7 @@ def turnRightTimeUpdate(changeInDegrees):
     turnOnRightWheels("backward")
     positionData["rotation"] = positionData["rotation"] + changeInDegrees
     writeJson("positionData.json",positionData)
-    if positionData["rotation"] > 360:
-        positionData["rotation"] = positionData["rotation"] - 360
+    positionData["rotation"] = positionData["rotation"] % 360
     global turnCount
     turnCount = turnCount + 1
 
@@ -88,7 +87,7 @@ def turnLeftTimeUpdate(changeInDegrees):
 
 
 def findTurnTime(deg):
-    return deg/((zoombaStats["speed"]+zoombaStats["radius"])/2.0) # Original Equation Is change in theta = 0.5 * (wi + w) * t
+    return deg/((zoombaStats["speed"])/2.0) # Original Equation Is change in theta = 0.5 * (wi + w) * t
     # t = theta / (0.5 * (wi + w))
     #THIS WAS WRONG MATTHEW YOU DID * INSTEAD OF +
 
@@ -173,31 +172,22 @@ def lookAt(x,y):
     changeInX = x - positionData["x"]
     changeInY = y - positionData["y"]
 
-    print(changeInX)
-    print(changeInY)
-
     angleOfLine = math.atan2(changeInY,changeInX)
     angleOfLineDeg = angleOfLine * 180 / math.pi
-    print (angleOfLine)
-    print (angleOfLineDeg)
 
     if positionData["rotation"] % 360 > angleOfLineDeg:                         #This is to get the most efficient direction without fucking with negatives
         amountToTurn = positionData["rotation"] % 360 - angleOfLineDeg
         if amountToTurn > 180:
             amountToTurn = amountToTurn - 180
-            print("Right: " + amountToTurn)
-            turnRight(amountToTurn)
+            return(amountToTurn)
         else:
             if amountToTurn > 180:
                 amountToTurn = amountToTurn - 180
-                print("Left: " + amountToTurn)
-                turnLeft(amountToTurn)
-            print("Left: " + str(amountToTurn))
-            turnLeft(amountToTurn)
+                return((amountToTurn*-1))
+            return((amountToTurn*-1))
     elif positionData["rotation"] % 360 < angleOfLineDeg:
         amountToTurn = angleOfLineDeg - positionData["rotation"] % 360
-        print("Right: " + str(amountToTurn))
-        turnRight(amountToTurn)
+        return(amountToTurn)
 
     #if changeInY == 0:
     #     if changeInX < 0:
@@ -216,8 +206,7 @@ def lookAt(x,y):
     # #changeInDegrees = -math.atan2(changeInY,changeInX) - (math.pi/2)
     # return "rotate("+str(deg - positionData["rotation"])+")"
 
-def pointInDirection(deg):
-    return deg - positionData["rotation"]
+
 
 def followPath():
     global pathData
@@ -229,11 +218,11 @@ def followPath():
             angle = math.atan2(line["start"][1]-positionData["y"],line["start"][0] - positionData["x"])
         #print angle
         #print positionData["rotation"]
-        zoombaStats["actions"].append(lookAt(line["end"][0],line["end"][1]))
+        zoombaStats["actions"].append("rotate("+str(lookAt(line["end"][0],line["end"][1]))+")")
         xDist = line["start"][0] - line["end"][0]
         yDist = line["start"][1] - line["end"][1]
         dist = math.sqrt((xDist*xDist) + (yDist * yDist))
-        #zoombaStats["actions"].append("forward("+str(dist)+")")
+        zoombaStats["actions"].append("forward("+str(dist)+")")
 
 
 
