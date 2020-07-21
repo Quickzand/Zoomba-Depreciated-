@@ -59,6 +59,6 @@ if __name__ == "__main__":
     #         time.sleep(0.01)
     #     except:
     #         pass
-
+    startAcceleration()
     static.selfIP = getOwnIp("wlan0")
     sniff("wlan0")
