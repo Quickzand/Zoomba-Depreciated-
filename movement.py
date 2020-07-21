@@ -124,8 +124,8 @@ def update():                                                                   
         zoombaStats["visualDistance"] = distance
 
         writeJson("zoombaStats.json", zoombaStats)
-        time.sleep(changeInTime)
-        update()
+        #time.sleep(changeInTime)
+        #update()
 
 def getAcceleration():
     moving.acceleration = readJson("zoombaStats.json")["acceleration"]

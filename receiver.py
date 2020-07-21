@@ -42,6 +42,7 @@ def runCommand(command, ip):
         print("Python dictionaries are not objects. That's final.")
     elif command == "sendJson":
         json = movement.readJson("zoombaStats.json")
+        movement.update()
         reply("zoomba:'JSON="+str(json)+"'", ip)
 
 def getOwnIp(interface):
@@ -51,7 +52,7 @@ def getOwnIp(interface):
     return ip
 
 if __name__ == "__main__":
-    start_new_thread(movement.update, ())
+    #start_new_thread(movement.update, ())
     # while True:
     #     try:
     #         print(movement.readJson("zoombaStats.json"))
