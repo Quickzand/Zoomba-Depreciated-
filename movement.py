@@ -1,4 +1,6 @@
 import json, time, sys, argparse, threading, math, os
+import accelerometer
+import distanceSensor
 from threading import Event, Thread
 global turnCount
 turnCount = 0
@@ -8,12 +10,18 @@ moveCount = 0
 
 class movingClass:          #basically just want organized static variables
     pass
-moving = movingClass()
+moving = movingClass()      #UPDATE THIS IS STUPID REMOVE THIS AND USE GLOBAL IM TOO LAZY THOUGH
 moving.forward = False
 moving.left = False
 moving.right = False
-moving.speed = 0
-moving.acceleration = 0
+
+xSpeed = 0
+ySpeed = 0
+zSpeed = 0
+xAccl = 0
+yAccl = 0
+zAccl = 0
+distance = 0
 
 # def getArgs():
 #     parser = argparse.ArgumentParser()
@@ -94,22 +102,30 @@ def findTurnTime(deg):
 
 
 
-def updateSpeedAndAcceleration():           #This should be run on a separate thread
-        changeInTime = 0.01
-        getAcceleration()
-        moving.speed = moving.speed + moving.acceleration * changeInTime   #Vf = vi + a*t
+def update():                                                                   #This should be run on a separate thread, distance takes 0.1 seconds to update hrmph
+        global xSpeed, ySpeed, zSpeed, xAccl, yAccl, zAccl, distance
 
-        zoombaStats["speed"] = moving.speed
+        changeInTime = 0.1
+        distance = distanceSensor.run()
+        (xAccl, yAccl, zAccl) = accelerometer.getAcceleration()
+
+        xSpeed = xSpeed + xAccl() * changeInTime                                #Vf = vi + a*t
+        ySpeed = ySpeed + yAccl() * changeInTime                                #Vf = vi + a*t
+        zSpeed = zSpeed + zAccl() * changeInTime                                #Vf = vi + a*t
+
+        zoombaStats["speed"]["x"] = xSpeed                                          #just x and y for now no need for z
+        zoombaStats["speed"]["y"] = ySpeed
+
+        zoombaStats["acceleration"]["x"] = xAccl                                          #just x and y for now no need for z
+        zoombaStats["acceleration"]["y"] = yAccl
+
+        zoombaStats["visualDistance"] = distance
+
         writeJson("zoombaStats.json", json)
-
         time.sleep(changeInTime)
 
 def getAcceleration():
     moving.acceleration = readJson("zoombaStats.json")["acceleration"]
-
-
-
-
 
 def turnOnLeftWheels(direction): #Code To Turn On Left Wheels Would Go Here - Should NEVER be used in isolation
     if direction == "forward":

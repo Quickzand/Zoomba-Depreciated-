@@ -51,7 +51,7 @@ def getOwnIp(interface):
     return ip
 
 if __name__ == "__main__":
-    start_new_thread(movement.updateSpeedAndAcceleration, ())
+    start_new_thread(movement.update, ())
     # while True:
     #     try:
     #         print(movement.readJson("zoombaStats.json"))
