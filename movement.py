@@ -109,9 +109,9 @@ def update():                                                                   
         distance = distanceSensor.run()
         (xAccl, yAccl, zAccl) = accelerometer.getAcceleration()
 
-        xSpeed = xSpeed + xAccl() * changeInTime                                #Vf = vi + a*t
-        ySpeed = ySpeed + yAccl() * changeInTime                                #Vf = vi + a*t
-        zSpeed = zSpeed + zAccl() * changeInTime                                #Vf = vi + a*t
+        xSpeed = xSpeed + xAccl * changeInTime                                #Vf = vi + a*t
+        ySpeed = ySpeed + yAccl * changeInTime                                #Vf = vi + a*t
+        zSpeed = zSpeed + zAccl * changeInTime                                #Vf = vi + a*t
 
         zoombaStats["speed"]["x"] = xSpeed                                          #just x and y for now no need for z
         zoombaStats["speed"]["y"] = ySpeed
