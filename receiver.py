@@ -6,6 +6,7 @@ import subprocess
 from _thread import start_new_thread
 import movement
 import json
+import accelerometer
 
 class staticClass:
     pass
