@@ -105,6 +105,9 @@ def findTurnTime(deg):
 def update():                                                                   #This should be run on a separate thread, distance takes 0.1 seconds to update hrmph
         global xSpeed, ySpeed, zSpeed, xAccl, yAccl, zAccl, distance
 
+        zoombaStats
+         = readJson("zoombaStats.json")
+
         changeInTime = 0.1
         distance = distanceSensor.run()
         (xAccl, yAccl, zAccl) = accelerometer.getAcceleration()
@@ -121,7 +124,7 @@ def update():                                                                   
 
         zoombaStats["visualDistance"] = distance
 
-        writeJson("zoombaStats.json", json)
+        writeJson("zoombaStats.json", zoombaStats)
         time.sleep(changeInTime)
 
 def getAcceleration():
