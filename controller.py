@@ -7,7 +7,6 @@ import re
 from networkScanner import scan
 import sys
 from _thread import start_new_thread
-import movement
 import json
 import ast
 
@@ -52,7 +51,7 @@ def listenForzoomba(packet):
                 print("\r[+] zoomba found at " + zoomba.ip, end="")
             elif "JSON=" in response:
                 response = response[5:]
-                movement.writeJson("zoombaStats.json", ast.literal_eval(response))
+                writeJson("zoombaStats.json", ast.literal_eval(response))
     except:
         pass
 
@@ -81,6 +80,10 @@ def runCommand(command, interface):
         fullCommand = "zoomba: '"+command+"'"
         packet = scapy.IP(dst = zoomba.ip, src = getOwnIp(interface)) / scapy.Raw(load=fullCommand)
         scapy.send(packet, verbose=False)
+        
+def writeJson(fName,data):
+    with open(fName,'w') as outfile:
+        json.dump(data,outfile)
 
 if __name__ == "__main__":
     options = getOptions()

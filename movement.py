@@ -125,6 +125,7 @@ def update():                                                                   
 
         writeJson("zoombaStats.json", zoombaStats)
         time.sleep(changeInTime)
+        update()
 
 def getAcceleration():
     moving.acceleration = readJson("zoombaStats.json")["acceleration"]
