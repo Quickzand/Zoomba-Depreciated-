@@ -97,7 +97,19 @@ open_set = Set(open_set)
 closed_set = []
 closed_set = Set(closed_set)
 global size
-size = 1000
+global xChange
+global yChange
+size = int(round(math.sqrt(((positionData["x"] - zoombaStats["destination"]["x"])*(positionData["x"] - zoombaStats["destination"]["x"])) + ((positionData["y"] - zoombaStats["destination"]["y"])*(positionData["y"] - zoombaStats["destination"]["y"]))) + 100))
+if positionData["x"] < zoombaStats["destination"]["x"]:
+    xChange = zoombaStats["destination"]["x"]
+else:
+    xChange = int(round(positionData["x"]))
+
+if positionData["y"] < zoombaStats["destination"]["y"]:
+    yChange = zoombaStats["destination"]["y"]
+else:
+    yChange = int(round(positionData["y"]))
+print(size)
 grid = []
 
 # Making a grid
@@ -115,8 +127,9 @@ for i in range(size):
     for j in range(size):
         grid[i][j].add_neighbors(grid)
 
-start = grid[int(round(positionData["x"]))][int(round(positionData["y"]))]
-end = grid[zoombaStats["destination"]["x"]][zoombaStats["destination"]["y"]]
+start = grid[int(0)][int(0)]
+#int(round(positionData["x"]))][int(round(positionData["y"]))
+end = grid[(zoombaStats["destination"]["x"]-xChange)][(zoombaStats["destination"]["y"]-yChange)]
 grid[0][0].wall = False
 grid[size - 1][size - 1].wall = False
 
@@ -195,9 +208,8 @@ basePath = {
 }
 for i in range(size):
     for j in range(size):
-        if grid[i][j].set > 0:
-            basePath["points"].append([i,j])
-            #print str(i) + "," + str(j)
+        basePath["points"].append([(i+xChange),(j+yChange)])
+        print( str(i) + "," + str(j))
 
 
 
