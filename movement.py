@@ -1,6 +1,6 @@
 import json, time, sys, argparse, threading, math, os
-import accelerometer
-import distanceSensor
+#import accelerometer
+#import distanceSensor
 from threading import Event, Thread
 global turnCount
 turnCount = 0
@@ -95,7 +95,8 @@ def turnLeftTimeUpdate(changeInDegrees):
 
 
 def findTurnTime(deg):
-    return deg/((zoombaStats["speed"])/2.0) # Original Equation Is change in theta = 0.5 * (wi + w) * t
+
+    return deg/(zoombaStats["rotationalSpeed"]/2.0) # Original Equation Is change in theta = 0.5 * (wi + w) * t
     # t = theta / (0.5 * (wi + w))
     #THIS WAS WRONG MATTHEW YOU DID * INSTEAD OF +
 
@@ -157,7 +158,8 @@ def turn(deg): #ammount to turn
 
 def forward(dist):
     #The Code To Move foward
-    moveTime = dist/zoombaStats["speed"]
+    avgSpeed = (zoombaStats["speed"]["x"] + zoombaStats["speed"]["y"])/2
+    moveTime = dist/avgSpeed
     global moveCount
     if moveTime == 0:
         changeInPos = dist
@@ -237,12 +239,15 @@ def followPath():
             angle = math.atan2(line["start"][1]-positionData["y"],line["start"][0] - positionData["x"])
         #print angle
         #print positionData["rotation"]
-        zoombaStats["actions"].append("rotate("+str(lookAt(line["end"][0],line["end"][1]))+")")
-        xDist = line["start"][0] - line["end"][0]
-        yDist = line["start"][1] - line["end"][1]
-        dist = math.sqrt((xDist*xDist) + (yDist * yDist))
-        zoombaStats["actions"].append("forward("+str(dist)+")")
 
+
+
+def goToPoint(x,y):
+    zoombaStats["actions"].append("rotate("+str(lookAt(x,y))+")")
+    xDist = positionData["x"] - x
+    yDist = positionData["y"] - y
+    dist = math.sqrt((xDist*xDist) + (yDist * yDist))
+    zoombaStats["actions"].append("forward("+str(dist)+")")
 
 
 def pathfind():

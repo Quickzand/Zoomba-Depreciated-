@@ -1,1 +1,1 @@
-{"Zoomba Name":"Frat Boy Zoomba","acceleration":{"x":187.75,"y":715.75},"visualDistance":125.23008584976196,"destination":{"y":890,"x":382},"actions":[],"radius":5,"speed":{"x":1558.3250000000016,"y":5941.137499999991}}
+{"Zoomba Name": "Frat Boy Zoomba", "acceleration": {"y": 715.75, "x": 187.75}, "visualDistance": 125.23008584976196, "destination": {"y": 890, "x": 382}, "actions": [], "radius": 5, "speed": {"y": 5, "x": 5}, "rotationalSpeed": 50}
