@@ -22,7 +22,7 @@ xAccl = 0
 yAccl = 0
 zAccl = 0
 distance = 0
-
+# haha bot go brrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr
 # def getArgs():
 #     parser = argparse.ArgumentParser()
 #     parser.add_argument("-s","--statsPath", dest="statsPath", help="Path Of The Zoomba Stats")
