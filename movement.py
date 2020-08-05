@@ -33,10 +33,10 @@ def findTurnTime(deg):
 def turn(deg):
     global changeInDegrees
     turnTime = findTurnTime(deg)
-    endDirection = jsonStorage.positionData["rotation"] + deg
-    changeInDegrees = jsonStorage.zoombaStats["maxSpeed"] * jsonStorage.zoombaStats["radius"]
+    endDirection = jsonStorage.positionData["rotation"] + deg + 0.0
+    changeInDegrees = jsonStorage.zoombaStats["maxSpeed"] * jsonStorage.zoombaStats["radius"] + 0.0
     while not round(endDirection,2) == round(jsonStorage.positionData["rotation"],2):
-        changeInDegrees = changeInDegrees/2
+        changeInDegrees = changeInDegrees/2 + 0.0
         if endDirection < jsonStorage.positionData["rotation"]:
             while round(endDirection,2) < round(jsonStorage.positionData["rotation"],2):
                 turnTickUpdate()

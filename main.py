@@ -8,12 +8,12 @@ import movement #Importing all movement commands
 
 global availableActions
 availableActions = {
-    "move": movement.moveForward
+    "move": movement.moveForward,
+    "turn": movement.turn
 }
 
 def executeNextAction():
     jsonStorage.getActionSet()
-    print(jsonStorage.actionSet)
     pendingActions = jsonStorage.actionSet["pending"]
     if len(pendingActions) > 0:
         currentAction = pendingActions.pop()
@@ -25,11 +25,15 @@ def executeNextAction():
         jsonStorage.actionSet["pastActions"].insert(0,currentAction)
         jsonStorage.writeActionSet()
 
+def simplifyRotation():
+    jsonStorage.positionData["rotation"] = jsonStorage.positionData["rotation"] % 360
+    jsonStorage.writePositionData()
 
 
 # Gets Executed Every Cycle Interval and Acts as The System Cycle
 def cycle():
     jsonStorage.updateAllJSON()
+    simplifyRotation()
     executeNextAction()
 
 #Only Runs if main file.
