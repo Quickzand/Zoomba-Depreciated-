@@ -2,7 +2,7 @@ import baseFunctions #Importing all functions made by us
 
 import jsonStorage #Importing All JSON
 
-import math
+import math, time
 
 global moveCount
 moveCount = 0
@@ -31,19 +31,28 @@ def findTurnTime(deg):
     return abs(deg/((jsonStorage.zoombaStats["maxSpeed"]*jsonStorage.zoombaStats["radius"])/2.0)) # Original Equation Is change in theta = 0.5 * (wi + w) * t
 
 def turn(deg):
-    global turnCount
     global changeInDegrees
-    turnCount = 0
     turnTime = findTurnTime(deg)
-    changeInDegrees = (deg/turnTime) * jsonStorage.zoombaStats["cycleInterval"]
-    stopTurning = baseFunctions.call_repeatedly(0.1,turnTimeUpdate)
-    while turnCount < (turnTime/jsonStorage.zoombaStats["cycleInterval"]):
-        RandomActionGoesHere = True #Didnt know how else to wait for the condition to be false
-    turnCount = 0
-    stopTurning()
+    endDirection = jsonStorage.positionData["rotation"] + deg
+    changeInDegrees = jsonStorage.zoombaStats["maxSpeed"] * jsonStorage.zoombaStats["radius"]
+    while not round(endDirection,2) == round(jsonStorage.positionData["rotation"],2):
+        changeInDegrees = changeInDegrees/2
+        if endDirection < jsonStorage.positionData["rotation"]:
+            while round(endDirection,2) < round(jsonStorage.positionData["rotation"],2):
+                turnTickUpdate()
+                if abs(changeInDegrees) < 0.01:
+                    break
+        elif endDirection > jsonStorage.positionData["rotation"]:
+            while round(endDirection,2) > round(jsonStorage.positionData["rotation"],2):
+                turnTickUpdate()
+                if abs(changeInDegrees) < 0.01:
+                    break
+        if abs(changeInDegrees) < 0.01:
+            break
+        changeInDegrees *= -1
 
-def turnTimeUpdate():
+
+def turnTickUpdate():
     jsonStorage.positionData["rotation"] = jsonStorage.positionData["rotation"] + changeInDegrees
     jsonStorage.writePositionData()
-    global turnCount
-    turnCount = turnCount + 1
+    time.sleep(jsonStorage.zoombaStats["cycleInterval"])
