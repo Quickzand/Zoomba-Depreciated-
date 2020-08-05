@@ -12,6 +12,7 @@ positionData = baseFunctions.readJson("positionData.json")
 
 #Json Maintnence Functions
 def getZoombaStats():
+    global zoombaStats
     zoombaStats = baseFunctions.readJson("zoombaStats.json")
 
 def writeZoombaStats():
@@ -19,12 +20,14 @@ def writeZoombaStats():
 
 
 def getActionSet():
+    global actionSet
     actionSet = baseFunctions.readJson("actionSet.json")
 
 def writeActionSet():
     baseFunctions.writeJson("actionSet.json",actionSet)
 
 def getPositionData():
+    global positionData
     positionData = baseFunctions.readJson("positionData.json")
 
 def writePositionData():

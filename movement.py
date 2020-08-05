@@ -47,5 +47,3 @@ def turnTimeUpdate():
     jsonStorage.writePositionData()
     global turnCount
     turnCount = turnCount + 1
-
-turn(25)
